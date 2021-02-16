@@ -3,6 +3,14 @@ from PyQt5 import QtCore, uic
 from PyQt5.QtGui import *
 import sys, os
 
+class Despedida(QDialog):
+    def __init__(self):
+        QDialog.__init__(self)
+        uic.loadUi("Despedida.ui",self)
+        self.showMaximized()
+        verImagen(self.label, "operacion12dc.jpeg")
+        # verImagen(self.label, "Aniversario.jpeg")
+
 rutaBase=os.getcwd()
 
 factorEspacio=24
@@ -86,9 +94,11 @@ class Principal(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         uic.loadUi("Ahorcado.ui",self)
+        self.showMaximized()
         self.numero=-1
         self.letras=[]
-        self.letrasMostrar=[]
+        self.letrasBuenas=[]
+        self.letrasMalas=[]
         self.errores=0
         self.frase=""
         self.totalLetras=""
@@ -100,13 +110,16 @@ class Principal(QMainWindow):
 
     def iniciar(self):
         if self.numero+1==len(versiculos):
-            QMessageBox.information(self, "Fin del juego", "Hasta el próximo aniversario", QMessageBox.Ok)
-            return
-        self.lblLetras.setText("")
+            QMessageBox.information(self, "Fin del juego", "Hasta el próximo domingo", QMessageBox.Ok)
+            Despedida().exec_()
+            self.close()
+        self.lblBuenas.setText("")
+        self.lblMalas.setText("")
         self.numero+=1
         self.errores=0
         self.letras=[]
-        self.letrasMostrar=[]
+        self.letrasBuenas=[]
+        self.letrasMalas=[]
         self.frase=versiculos[self.numero][0].upper()
         self.frase=self.frase.replace("Á", "A")
         self.frase=self.frase.replace("É", "E")
@@ -155,14 +168,16 @@ class Principal(QMainWindow):
             QMessageBox.information(self, "¡Ups!", "La letra %s ya existe" % letra, QMessageBox.Ok)
             return
         if letra in self.totalLetras:
-            self.letrasMostrar.append(letra)
+            self.letrasBuenas.append(letra)
         else:
-            self.letrasMostrar.append("(%s)" % letra)
+            self.letrasMalas.append(letra)
             self.errores+=1
-        if self.errores==maximoError: QMessageBox.information(self, "¡Ups!", "¡Ups!", QMessageBox.Ok)
+            if self.errores==maximoError: QMessageBox.information(self, "¡Ups!", "Cometiste %s errores\nNo importa, ¡sigamos jugando!" % str(maximoError), QMessageBox.Ok)
         self.letras.append(letra)
-        self.letrasMostrar.sort()
-        self.lblLetras.setText(", ".join(self.letrasMostrar))
+        self.letrasBuenas.sort()
+        self.letrasMalas.sort()
+        self.lblBuenas.setText(", ".join(self.letrasBuenas))
+        self.lblMalas.setText(", ".join(self.letrasMalas))
 
         self.mostrar(self.frase, verificarLetras(self.totalLetras, self.letras), versiculos[self.numero][1])
 
